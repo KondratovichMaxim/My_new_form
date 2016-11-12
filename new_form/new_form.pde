@@ -35,6 +35,8 @@ void setup() {
   plusEnable = minusEnable = true;
   moveEnable = true;
   
+  frameRate(999);//Means unlimited
+  
   createGUI();
 }
 void draw(){
@@ -46,6 +48,7 @@ void draw(){
   text("f",160,14);
   text("n",230,14);
   text("delta fi",297,14);
+  text(frameRate,0,20);
   
   DrawAxises();
   
@@ -98,7 +101,6 @@ void ReCalculate(){
 
 //Scaling
 void mouseWheel(MouseEvent event) {
-  //float e = event.getCount();
   if(event.getCount() == 1)
     scale *= 0.8;
   else
