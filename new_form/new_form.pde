@@ -1,7 +1,7 @@
 import g4p_controls.*;
 
 float x,y,f,d,n;
-float a,c,fi;
+float a,b,c,fi;
 float delta_fi,scale;
 float x0,y0,xOfs,yOfs;
 boolean plusEnable,minusEnable,moveEnable;
@@ -32,6 +32,8 @@ void setup() {
   plusEnable = minusEnable = true;
   moveEnable = true;
   
+  frameRate(999);//Means unlimited
+  
   createGUI();
 }
 void draw(){
@@ -43,6 +45,7 @@ void draw(){
   text("f",160,14);
   text("n",230,14);
   text("delta fi",297,14);
+  text(frameRate,0,20);
   
   DrawAxises();
   
@@ -55,6 +58,8 @@ void draw(){
   
   for( fi = PI; fi < 3*PI; fi += delta_fi ){
      float[] rs = r();
+     
+     //Scaling
      rs[0] = rs[0]*scale;
      rs[1] = rs[1]*scale;
      
@@ -74,14 +79,19 @@ void draw(){
 
 float[] r(){
   float[] rs = new float[2];
+  
+  b = _b(fi);
     
-  rs[0] = (-b(fi)+sqrt(b(fi)*b(fi)-4*a*c))/(2*a);
-  rs[1] = (-b(fi)-sqrt(b(fi)*b(fi)-4*a*c))/(2*a);
+  if(plusEnable)
+    rs[0] = (-b+sqrt(b*b-4*a*c))/(2*a);
+  
+  if(minusEnable)
+    rs[1] = (-b-sqrt(b*b-4*a*c))/(2*a);
   
   return rs;
 }
 
-float b(float angle){
+float _b(float angle){
   return 2*(d+n*f)-2*n*n*(d+f)*cos(angle);
 }
 
