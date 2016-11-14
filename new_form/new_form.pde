@@ -44,8 +44,8 @@ void draw(){
   fill(0);
   text(mouseX-width/2+" ; "+ (mouseY-height/2),0,10);
   
-  text("d",90,14);
-  text("f",160,14);
+  text("A",90,14);
+  text("B",160,14);
   text("n",230,14);
   text("delta fi",297,14);
   text(frameRate,0,20);
@@ -54,10 +54,11 @@ void draw(){
   
   fill(200,0,0);
   noStroke();
-  ellipse( d*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
-  ellipse( (d+f)*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
-  fill(0);
-  stroke(0);
+  ellipse(width/2 + xOfs,height/2 + yOfs,3,3);
+  //ellipse( d*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
+  //ellipse( (d+f)*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
+  //fill(0);
+  //stroke(0);
   
   for( fi = PI; fi < 3*PI; fi += delta_fi ){
      float[] rs = r();
@@ -88,15 +89,6 @@ float[] r(){
   rs[1] = ((A*cos(fi)*n-B)-sqrt(pow(A*cos(fi)*n-B,2)-(n*n-1)*(A*A-B*B)))/(n*n-1);
   
   return rs;
-}
-
-float b(float angle){
-  return 2*(d+n*f)-2*n*n*(d+f)*cos(angle);
-}
-
-void ReCalculate(){
-  a = n*n-1;
-  c = pow(n*(d+f),2)-pow(d+n*f,2);
 }
 
 //Scaling
@@ -140,11 +132,11 @@ void DrawAxises(){
   G4P.setCursorOff(ARROW);
     
   textfield1 = new GTextField(this, 105, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield1.setText(str(d));
+  textfield1.setText(str(A));
   textfield1.addEventHandler(this, "textfield1_change1");
   
   textfield2 = new GTextField(this, 170, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield2.setText(str(f));
+  textfield2.setText(str(B));
   textfield2.addEventHandler(this, "textfield2_change1");
   
   textfield3 = new GTextField(this, 240, 1, 50, 20, G4P.SCROLLBARS_NONE);
@@ -177,8 +169,7 @@ void DrawAxises(){
 void textfield1_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(float(source.getText())>0){
-      d = float(source.getText());
-      ReCalculate();
+      A = float(source.getText());
     }
   }
 }
@@ -186,8 +177,7 @@ void textfield1_change1(GTextField source, GEvent event) {
 void textfield2_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(float(source.getText())>0){
-      f = float(source.getText());
-      ReCalculate();
+      B = float(source.getText());
     }
   }
 }
@@ -195,7 +185,6 @@ void textfield3_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(int(source.getText())>0){
       n = float(source.getText());
-      ReCalculate();
     }
   }
 }
