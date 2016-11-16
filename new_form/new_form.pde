@@ -39,22 +39,26 @@ void setup() {
 void draw(){
   background(255);
   fill(0);
-  text(mouseX-width/2+" ; "+ (mouseY-height/2),0,10);
+  text(( mouseX - width/2 - xOfs)/scale +" ; "+ ( mouseY - height/2 -yOfs )/scale ,0,35);
   
   text("d",90,14);
   text("f",160,14);
   text("n",230,14);
   text("delta fi",297,14);
-  text(frameRate,0,20);
+  text(frameRate,0,10);
   
   DrawAxises();
   
   fill(200,0,0);
   noStroke();
   ellipse( d*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
+  text("d",d*scale + width/2 + xOfs,15 + height/2 + yOfs);
+  
   ellipse( (d+f)*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
+  text("f",(d+f)*scale + width/2 + xOfs,15 + height/2 + yOfs);
   fill(0);
   stroke(0);
+  ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
   for( fi = PI; fi < 3*PI; fi += delta_fi ){
      float[] rs = r();
@@ -82,11 +86,17 @@ float[] r(){
   
   b = _b(fi);
     
-  if(plusEnable)
+  if(plusEnable){
     rs[0] = (-b+sqrt(b*b-4*a*c))/(2*a);
+    if(rs[0]<=0 || rs[0]>=d+n*f)
+      rs[0] = 0;
+  }
   
-  if(minusEnable)
+  if(minusEnable){
     rs[1] = (-b-sqrt(b*b-4*a*c))/(2*a);
+    if(rs[1]<=0 || rs[1]>=d+n*f)
+      rs[1] = 0;
+  }
   
   return rs;
 }
@@ -136,7 +146,7 @@ void DrawAxises(){
    line(width/2,0,width/2,height);
    text("Y",width/2+10,height);
  }
- void createGUI(){
+void createGUI(){
   G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
   G4P.messagesEnabled(false);
   G4P.setCursorOff(ARROW);
