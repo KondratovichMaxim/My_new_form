@@ -60,7 +60,7 @@ void draw(){
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
-  for( fi = PI; fi < 3*PI; fi += delta_fi ){
+  for( fi = 3*PI/2; fi < 5*PI/2; fi += delta_fi ){
      float[] rs = r();
      
      //Scaling
