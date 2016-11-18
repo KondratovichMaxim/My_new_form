@@ -7,15 +7,18 @@ float x0,y0,xOfs,yOfs;
 boolean plusEnable,minusEnable,moveEnable,rayDrawing;
 Ray tRay;
 ArrayList<Ray> rays;
+float alpha0;
 
 GTextField textfield1;
 GTextField textfield2;
 GTextField textfield3;
 GTextField textfield4;
+GTextField txtAlpha0;
+GTextField txtR1;
+GTextField txtR2;
 GCheckbox checkbox1; 
 GCheckbox checkbox2;
 GCheckbox checkbox3; 
-GCheckbox checkbox4; 
 
 void setup() {
   size(1200, 600);
@@ -36,11 +39,14 @@ void setup() {
   moveEnable = true;
   
   rays = new ArrayList();
+  rays.add(new Ray());
+  rays.add(new Ray());
+  
+  alpha0 = 0.4;
   
   frameRate(999);//Means unlimited
   
   createGUI();
-  checkbox4.setSelected(false);
 }
 void draw(){
   background(255);
@@ -52,6 +58,9 @@ void draw(){
   text("n",230,14);
   text("delta fi",297,14);
   text(frameRate,0,10);
+  text("alpha0",1,54);
+  text("R1",15,80);
+  text("R2",15,105);
   
   DrawAxises();
   
@@ -85,11 +94,8 @@ void draw(){
      
      stroke(0);
   }
-  for( int i = 0;i<rays.size();i++){
-    Ray tmpR = rays.get(i);
-    line(tmpR.x,tmpR.y,tmpR.x + 100,tmpR.y+tan(tmpR.angle)*(100));//100 is X and Y length
-  }
   
+  DrawRay();
 }
 
 float[] r(){
@@ -121,6 +127,50 @@ void ReCalculate(){
   c = pow(n*(d+f),2)-pow(d+n*f,2);
 }
 
+void DrawRay(){
+  float b0 = _b(alpha0);
+  float r0 = (-b0-sqrt(b0*b0-4*a*c))/(2*a);
+  float x0 = r0*cos(alpha0), y0 = r0*sin(alpha0);
+  float gamma;
+  ellipse(x0*scale+width/2+xOfs,y0*scale+height/2+yOfs,5,5);
+  
+  float k1 = r0, k2 = sqrt(pow(d+f-x0,2)+y0*y0);
+  float alphaN = atan( (1/k1+y0/k2)/(x0*(1/k1+1/k2)-((d+f)/k2)) );
+  
+  //Normal drawing
+  if(true){
+   float yn1 = y0*0.5, yn2 = y0*1.5, xn1 = (yn1-y0)/tan(alphaN)+x0, xn2 = (yn2-y0)/tan(alphaN)+x0;
+   //float xn1 = x0*0.5 , xn2 = x0*1.5, yn1 = tan(alphaN)*(xn1+x0)+y0, yn2 = tan(alphaN)*(xn2+x0)+y0 ;
+   //float xn1 = x0*0.5 , xn2 = x0*1.5 , yn1 = tan(alphaN)*xn1 , yn2 =tan(alphaN)*xn2 ;
+   line( xn1*scale+width/2+xOfs , yn1*scale+height/2+yOfs , xn2*scale+width/2+xOfs , yn2*scale+height/2+yOfs ); //<>//
+  }
+  
+  //First
+  float coords[] = float(split(txtR1.getText(),';'));
+  rays.set(0,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
+  
+  stroke(0,255,0);
+  
+  line(rays.get(0).x*scale+width/2+xOfs,rays.get(0).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
+  
+  gamma = -asin(sin(radians(180)-alphaN-rays.get(0).angle)/n) ;
+  
+  line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (x0+tan(alphaN - radians(90) + gamma)*y0)*scale +width/2+xOfs , 0+height/2+yOfs );
+  
+  //Second
+  coords = float(split(txtR2.getText(),';'));
+  rays.set(1,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
+  
+  stroke(0,0,255);
+  
+  line(rays.get(1).x*scale+width/2+xOfs,rays.get(1).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
+  
+  gamma = -asin(sin(radians(180)-alphaN-rays.get(1).angle)/n) ;
+  
+  line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (x0+tan(alphaN - radians(90) + gamma)*y0)*scale +width/2+xOfs , 0+height/2+yOfs );
+  
+}
+
 float _round(float n){
  return round(n*10)/10;
 }
@@ -138,10 +188,6 @@ void mouseWheel(MouseEvent event) {
 void mousePressed() {
   x0 = mouseX - xOfs;
   y0 = mouseY - yOfs;
-  
-  if(rayDrawing){
-    tRay = new Ray( mouseX,mouseY,0);
-  }
 }
 void mouseDragged() 
 {
@@ -149,19 +195,10 @@ void mouseDragged()
     xOfs = mouseX - x0;
     yOfs = mouseY - y0;
   }
-  if(rayDrawing){
-    tRay.angle = atan((mouseY - tRay.y)/(mouseX - tRay.x));
-    stroke(0);
-    line(tRay.x,tRay.y,tRay.x+50*cos(tRay.angle),tRay.y+50*sin(tRay.angle));
-  }
 }
 void mouseReleased() {
   x0 = mouseX;
   y0 = mouseY;
-  
-  if(rayDrawing){
-    rays.add(tRay);
-  }
 }
 
 void DrawAxises(){
@@ -195,6 +232,18 @@ void createGUI(){
   textfield4.setText(str(delta_fi));
   textfield4.addEventHandler(this, "textfield4_change1");
   
+  txtAlpha0 = new GTextField(this, 40, 40, 100, 20, G4P.SCROLLBARS_NONE);
+  txtAlpha0.setText(str(alpha0));
+  txtAlpha0.addEventHandler(this, "txtAlpha0_change1");
+  
+  txtR1 = new GTextField(this, 40, 65, 50, 20, G4P.SCROLLBARS_NONE);
+  txtR1.setText("0;10");
+  txtR1.addEventHandler(this, "txtR1_change1");
+  
+  txtR2 = new GTextField(this, 40, 90, 50, 20, G4P.SCROLLBARS_NONE);
+  txtR2.setText("0;30");
+  txtR2.addEventHandler(this, "txtR2_change1");
+  
   checkbox1 = new GCheckbox(this, 400, 0, 64, 20);
   checkbox1.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
   checkbox1.setText("+ (blue)");
@@ -212,12 +261,6 @@ void createGUI(){
   checkbox3.setText("Enable moving");
   checkbox3.setSelected(true);
   checkbox3.addEventHandler(this, "checkbox3_select");
-  
-  checkbox4 = new GCheckbox(this, 630, 0, 100, 20);
-  checkbox4.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
-  checkbox4.setText("Rays drawing");
-  checkbox4.setSelected(true);
-  checkbox4.addEventHandler(this, "checkbox4_select");
 }
 
 void textfield1_change1(GTextField source, GEvent event) {
@@ -252,6 +295,27 @@ void textfield4_change1(GTextField source, GEvent event) {
     }
   }
 }
+void txtAlpha0_change1(GTextField source, GEvent event) {
+  if(event == GEvent.CHANGED){
+    if(float(source.getText())>0){
+      alpha0 = float(source.getText());
+    }
+  }
+}
+void txtR1_change1(GTextField source, GEvent event) {
+  if(event == GEvent.CHANGED){
+    if(source.getText().contains(";")){
+      DrawRay();
+    }
+  }
+}
+void txtR2_change1(GTextField source, GEvent event) {
+  if(event == GEvent.CHANGED){
+    if(source.getText().contains(";")){
+      DrawRay();
+    }
+  }
+}
 void checkbox1_select(GCheckbox source, GEvent event) {
   if (checkbox1.isSelected() == true) {
     plusEnable = true;
@@ -271,22 +335,8 @@ void checkbox2_select(GCheckbox source, GEvent event) {
 void checkbox3_select(GCheckbox source, GEvent event) { 
   if (checkbox3.isSelected() == true) {
     moveEnable = true;
-    
-    checkbox4.setSelected(false);
-    rayDrawing = false;
   }
   else {
     moveEnable = false;
-  }
-} 
-void checkbox4_select(GCheckbox source, GEvent event) { 
-  if (checkbox4.isSelected() == true) {
-    rayDrawing = true;
-    
-    checkbox3.setSelected(false);
-    moveEnable = false;
-  }
-  else {
-    rayDrawing = false;
   }
 } 

@@ -5,4 +5,5 @@ class Ray{
     y = _y;
     angle = _angle;
   }
+  Ray(){}
 }
