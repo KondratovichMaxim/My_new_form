@@ -1,8 +1,8 @@
 import g4p_controls.*;
 
-float x,y,f,d,n;
-float a,b,c,fi;
-float delta_fi,scale;
+float x,y,z,f,d,n;
+float c,alpha,betta;
+float delta_angle,scale;
 float x0,y0,xOfs,yOfs;
 boolean plusEnable,minusEnable,moveEnable;
 
@@ -15,19 +15,16 @@ GCheckbox checkbox2;
 GCheckbox checkbox3; 
 
 void setup() {
-  size(1200, 600);
+  size(1200, 600,P3D);
   
-  d=40;
-  f=20;
+  d=80;
+  f=220;
   n=1.5;
   
-  a = n*n-1;
-  c = pow(n*(d+f),2)-pow(d+n*f,2);
-  
-  delta_fi = 0.003;
+  delta_angle = 0.03;
   scale = 1;
   
-  xOfs = yOfs = 0;
+  //xOfs = yOfs = 0;
   
   plusEnable = minusEnable = true;
   moveEnable = true;
@@ -39,6 +36,10 @@ void setup() {
 void draw(){
   background(255);
   fill(0);
+  
+  if(mousePressed && moveEnable)
+    camera(mouseX*1.6, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
+  
   text(( mouseX - width/2 - xOfs)/scale +" ; "+ ( mouseY - height/2 -yOfs )/scale ,0,35);
   
   text("d",90,14);
@@ -60,54 +61,70 @@ void draw(){
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
-  for( fi = 3*PI/2; fi < 5*PI/2; fi += delta_fi ){
+  //for( fi = 3*PI/2; fi < 5*PI/2; fi += delta_fi ){
+  //   float[] rs = r();
+     
+  //   //Scaling
+  //   rs[0] = rs[0]*scale;
+  //   rs[1] = rs[1]*scale;
+     
+  //   if(plusEnable){
+  //     stroke(0,0,255);
+  //     point( rs[0]*cos(fi) + width/2 + xOfs, rs[0]*sin(fi) + height/2 + yOfs);
+  //   }
+     
+  //   if(minusEnable){
+  //   stroke(255,0,0);
+  //   point( rs[1]*cos(fi) + width/2 + xOfs, rs[1]*sin(fi) + height/2 + yOfs);
+  //   }
+     
+  //   stroke(0);
+  //}
+  
+  for(alpha = 3*PI/2 ; alpha < 5*PI/2 ; alpha += delta_angle){
+   for(betta = 3*PI/2 ; betta < 5*PI/2 ; betta += delta_angle){
      float[] rs = r();
      
-     //Scaling
-     rs[0] = rs[0]*scale;
-     rs[1] = rs[1]*scale;
+    //Scaling
+    rs[0] = rs[0]*scale;
+    rs[1] = rs[1]*scale;
+    
+    if(plusEnable){
+      stroke(0,0,255);
+      point( rs[0]*cos(alpha)*cos(betta) + width/2 + xOfs, rs[0]*sin(alpha) + height/2 + yOfs, rs[0]*cos(alpha)*sin(betta));
+    }
      
-     if(plusEnable){
-       stroke(0,0,255);
-       point( rs[0]*cos(fi) + width/2 + xOfs, rs[0]*sin(fi) + height/2 + yOfs);
-     }
-     
-     if(minusEnable){
-     stroke(255,0,0);
-     point( rs[1]*cos(fi) + width/2 + xOfs, rs[1]*sin(fi) + height/2 + yOfs);
-     }
-     
-     stroke(0);
+    if(minusEnable){
+      stroke(255,0,0);
+      point( rs[1]*cos(alpha)*cos(betta) + width/2 + xOfs, rs[1]*sin(alpha) + height/2 + yOfs, rs[1]*cos(alpha)*sin(betta));
+    }
+   }
   }
 }
-
 float[] r(){
   float[] rs = new float[2];
   
-  b = _b(fi);
-    
+  c = pow(d+n*f,2)-pow(n*(d+f),2);
+  
   if(plusEnable){
-    rs[0] = (-b+sqrt(b*b-4*a*c))/(2*a);
+    rs[0] = (-b()+sqrt(b()*b()-4*a()*c))/(2*a());
     if(rs[0]<=0 || rs[0]>=d+n*f)
       rs[0] = 0;
   }
   
   if(minusEnable){
-    rs[1] = (-b-sqrt(b*b-4*a*c))/(2*a);
+    rs[1] = (-b()-sqrt(b()*b()-4*a()*c))/(2*a());
     if(rs[1]<=0 || rs[1]>=d+n*f)
       rs[1] = 0;
   }
-  
   return rs;
 }
-
-float _b(float angle){
-  return 2*(d+n*f)-2*n*n*(d+f)*cos(angle);
+float a(){
+  return ( 1 - n*n*(pow(cos(betta)*cos(alpha) ,2) + pow( sin(alpha) ,2) + pow( cos(alpha)*sin(betta) ,2)) );
 }
 
-void ReCalculate(){
-  a = n*n-1;
-  c = pow(n*(d+f),2)-pow(d+n*f,2);
+float b(){
+  return 2*(n*n*(d+f)*cos(alpha)*cos(betta)-(d+n*f));
 }
 
 //Scaling
@@ -118,34 +135,16 @@ void mouseWheel(MouseEvent event) {
   else
     scale /= 0.8;
 }
-
-//Moving
-void mousePressed() {
-  x0 = mouseX - xOfs;
-  y0 = mouseY - yOfs;
-}
-void mouseDragged() 
-{
-  if(moveEnable){
-    xOfs = mouseX - x0;
-    yOfs = mouseY - y0;
-  }
-}
-void mouseReleased() {
-  x0 = mouseX;
-  y0 = mouseY;
-}
-
 void DrawAxises(){
-   stroke(0);
-   strokeWeight(1);
+  stroke(0);
+  strokeWeight(1);
    
-   line(0,height/2,width,height/2);
-   text("X",width-10,height/2+20);
+  line(0,height/2,width,height/2);
+  text("X",width-10,height/2+20);
    
-   line(width/2,0,width/2,height);
-   text("Y",width/2+10,height);
- }
+  line(width/2,0,width/2,height);
+  text("Y",width/2+10,height);
+}
 void createGUI(){
   G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
   G4P.messagesEnabled(false);
@@ -164,7 +163,7 @@ void createGUI(){
   textfield3.addEventHandler(this, "textfield3_change1");
   
   textfield4 = new GTextField(this, 340, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield4.setText(str(delta_fi));
+  textfield4.setText(str(delta_angle));
   textfield4.addEventHandler(this, "textfield4_change1");
   
   checkbox1 = new GCheckbox(this, 400, 0, 64, 20);
@@ -190,7 +189,6 @@ void textfield1_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(float(source.getText())>0){
       d = float(source.getText());
-      ReCalculate();
     }
   }
 }
@@ -199,7 +197,6 @@ void textfield2_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(float(source.getText())>0){
       f = float(source.getText());
-      ReCalculate();
     }
   }
 }
@@ -207,14 +204,13 @@ void textfield3_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(int(source.getText())>0){
       n = float(source.getText());
-      ReCalculate();
     }
   }
 }
 void textfield4_change1(GTextField source, GEvent event) {
   if(event == GEvent.CHANGED){
     if(float(source.getText())>0){
-      delta_fi = float(source.getText());
+      delta_angle = float(source.getText());
     }
   }
 }
