@@ -1,3 +1,7 @@
+import peasy.*;
+import peasy.org.apache.commons.math.*;
+import peasy.org.apache.commons.math.geometry.*;
+
 import g4p_controls.*;
 
 float x,y,z,f,d,n;
@@ -5,6 +9,7 @@ float c,alpha,betta;
 float delta_angle,scale;
 float x0,y0,xOfs,yOfs;
 boolean plusEnable,minusEnable,moveEnable;
+PeasyCam camera;
 
 GTextField textfield1;
 GTextField textfield2;
@@ -21,13 +26,16 @@ void setup() {
   f=220;
   n=1.5;
   
-  delta_angle = 0.03;
+  delta_angle = 0.01;
   scale = 1;
   
   //xOfs = yOfs = 0;
   
   plusEnable = minusEnable = true;
   moveEnable = true;
+  
+  camera = new PeasyCam(this,width/2,height/2,0, 100);
+  camera.setYawRotationMode();
   
   frameRate(999);//Means unlimited
   
@@ -37,9 +45,6 @@ void draw(){
   background(255);
   fill(0);
   
-  if(mousePressed && moveEnable)
-    camera(mouseX*1.6, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
-  
   text(( mouseX - width/2 - xOfs)/scale +" ; "+ ( mouseY - height/2 -yOfs )/scale ,0,35);
   
   text("d",90,14);
@@ -48,7 +53,7 @@ void draw(){
   text("delta fi",297,14);
   text(frameRate,0,10);
   
-  DrawAxises();
+  //DrawAxises();
   
   fill(200,0,0);
   noStroke();
@@ -60,26 +65,6 @@ void draw(){
   fill(0);
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
-  
-  //for( fi = 3*PI/2; fi < 5*PI/2; fi += delta_fi ){
-  //   float[] rs = r();
-     
-  //   //Scaling
-  //   rs[0] = rs[0]*scale;
-  //   rs[1] = rs[1]*scale;
-     
-  //   if(plusEnable){
-  //     stroke(0,0,255);
-  //     point( rs[0]*cos(fi) + width/2 + xOfs, rs[0]*sin(fi) + height/2 + yOfs);
-  //   }
-     
-  //   if(minusEnable){
-  //   stroke(255,0,0);
-  //   point( rs[1]*cos(fi) + width/2 + xOfs, rs[1]*sin(fi) + height/2 + yOfs);
-  //   }
-     
-  //   stroke(0);
-  //}
   
   for(alpha = 3*PI/2 ; alpha < 5*PI/2 ; alpha += delta_angle){
    for(betta = 3*PI/2 ; betta < 5*PI/2 ; betta += delta_angle){
@@ -104,7 +89,7 @@ void draw(){
 float[] r(){
   float[] rs = new float[2];
   
-  c = pow(d+n*f,2)-pow(n*(d+f),2);
+  c = pow(n*(d+f),2)-pow(d+n*f,2);
   
   if(plusEnable){
     rs[0] = (-b()+sqrt(b()*b()-4*a()*c))/(2*a());
@@ -120,11 +105,11 @@ float[] r(){
   return rs;
 }
 float a(){
-  return ( 1 - n*n*(pow(cos(betta)*cos(alpha) ,2) + pow( sin(alpha) ,2) + pow( cos(alpha)*sin(betta) ,2)) );
+  return ( n*n*(pow(cos(betta)*cos(alpha) ,2) + pow( sin(alpha) ,2) + pow( cos(alpha)*sin(betta) ,2)) - 1 );
 }
 
 float b(){
-  return 2*(n*n*(d+f)*cos(alpha)*cos(betta)-(d+n*f));
+  return 2*( (d+n*f) - n*n*(d+f)*cos(alpha)*cos(betta) );
 }
 
 //Scaling
@@ -157,7 +142,7 @@ void createGUI(){
   textfield2 = new GTextField(this, 170, 1, 50, 20, G4P.SCROLLBARS_NONE);
   textfield2.setText(str(f));
   textfield2.addEventHandler(this, "textfield2_change1");
-  
+   //<>//
   textfield3 = new GTextField(this, 240, 1, 50, 20, G4P.SCROLLBARS_NONE);
   textfield3.setText(str(n));
   textfield3.addEventHandler(this, "textfield3_change1");
