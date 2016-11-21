@@ -30,6 +30,7 @@ void setup() {
   a = n*n-1;
   c = pow(n*(d+f),2)-pow(d+n*f,2);
   
+  fi = 3*PI/2;
   delta_fi = 0.003;
   scale = 1;
   
@@ -75,8 +76,11 @@ void draw(){
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
-  for( fi = 3*PI/2; fi < 5*PI/2; fi += delta_fi ){
-     float[] rs = r();
+  float[] rs0 = r();
+  fi += delta_fi;
+  float []rs = r();
+  
+  for( fi = 3*PI/2 + 2*delta_fi; fi < 5*PI/2; fi += delta_fi ){
      
      //Scaling
      rs[0] = rs[0]*scale;
@@ -84,15 +88,16 @@ void draw(){
      
      if(plusEnable){
        stroke(0,0,255);
-       point( rs[0]*cos(fi) + width/2 + xOfs, rs[0]*sin(fi) + height/2 + yOfs);
+       line( rs0[0]*cos(fi) + width/2 + xOfs, rs0[0]*sin(fi) + height/2 + yOfs,rs[0]*cos(fi) + width/2 + xOfs, rs[0]*sin(fi) + height/2 + yOfs);
      }
      
      if(minusEnable){
-     stroke(255,0,0);
-     point( rs[1]*cos(fi) + width/2 + xOfs, rs[1]*sin(fi) + height/2 + yOfs);
+       stroke(255,0,0);
+       line( rs0[1]*cos(fi) + width/2 + xOfs, rs0[1]*sin(fi) + height/2 + yOfs,rs[1]*cos(fi) + width/2 + xOfs, rs[1]*sin(fi) + height/2 + yOfs);
      }
-     
      stroke(0);
+     rs0=rs;
+     rs = r();
   }
   
   DrawRay();
@@ -128,6 +133,10 @@ void ReCalculate(){
 }
 
 void DrawRay(){
+  
+  if(d>0)
+    return;
+  
   float b0 = _b(alpha0);
   float r0 = (-b0-sqrt(b0*b0-4*a*c))/(2*a);
   float x0 = r0*cos(alpha0), y0 = r0*sin(alpha0);
