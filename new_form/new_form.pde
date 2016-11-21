@@ -147,7 +147,7 @@ void DrawRay(){
   
   //First
   float coords[] = float(split(txtR1.getText(),';'));
-  rays.set(0,new Ray(coords[0],/*r0*sin(alpha0)*/coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
+  rays.set(0,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
   
   stroke(0,255,0);
   
@@ -155,19 +155,19 @@ void DrawRay(){
   
   gamma = asin(sin(PI-alphaN-rays.get(0).angle)/n) ;
   
-  line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (y0/tan(-(alpha0 + gamma)))*scale +x0 +width/2+xOfs , 0+height/2+yOfs );
+  line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (y0/tan(-(alpha0 + gamma)))*scale  +width/2+xOfs , 0+height/2+yOfs );
   
   //Second
-  //coords = float(split(txtR2.getText(),';'));
-  //rays.set(1,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
+  coords = float(split(txtR2.getText(),';'));
+  rays.set(1,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
   
-  //stroke(0,0,255);
+  stroke(0,0,255);
   
-  //line(rays.get(1).x*scale+width/2+xOfs,rays.get(1).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
+  line(rays.get(1).x*scale+width/2+xOfs,rays.get(1).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
   
-  //gamma = -asin(sin(radians(180)-alphaN-rays.get(1).angle)/n) ;
+  gamma = asin(sin(PI-alphaN-rays.get(1).angle)/n) ;
   
-  //line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (x0+tan(alphaN - radians(90) + gamma)*y0)*scale +width/2+xOfs , 0+height/2+yOfs );
+  line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (y0/tan(-(alpha0 + gamma)))*scale  +width/2+xOfs , 0+height/2+yOfs );
   
 }
 //Scaling
