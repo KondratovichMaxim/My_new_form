@@ -59,7 +59,7 @@ void draw(){
   text("delta fi",297,14);
   text(frameRate,0,10);
   text("alpha0",1,54);
-  text("R1",15,80);
+  text("alpha1",1,80);
   text("R2",15,105);
   
   DrawAxises();
@@ -141,7 +141,7 @@ void DrawRay(){
     //ellipse(x0*scale+width/2+xOfs,y0*scale+height/2+yOfs,5,5);
   
     float k1 = r0, k2 = sqrt(pow(d+f-x0,2)+y0*y0);
-    float alphaN = atan( (1/k1+y0/k2)/(x0*(1/k1+1/k2)-(d+f)/k2) );
+    float alphaN = atan( (1/k1+y0*n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
   
     //Normal drawing
     if(true){
@@ -159,9 +159,9 @@ void DrawRay(){
      rays.set(i,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
      line(rays.get(i).x*scale+width/2+xOfs,rays.get(i).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
   
-     gamma = asin(sin(PI-alphaN+rays.get(i).angle)/n) ;
+     gamma = asin(sin(PI-alphaN+rays.get(i).angle)/n);
   
-     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (-200/tan(alpha[i] + gamma))*scale  +width/2+xOfs ,-200+height/2+yOfs );
+     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (-200/tan(alpha[i] + gamma))*scale +width/2+xOfs ,-200*scale+height/2+yOfs );
     }
 }
 //Scaling
