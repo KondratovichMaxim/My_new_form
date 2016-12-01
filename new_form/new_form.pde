@@ -1,4 +1,4 @@
-import g4p_controls.*;
+import g4p_controls.*; //<>//
 
 float x,y,f,d,n;
 float a,b,c,fi;
@@ -29,7 +29,7 @@ void setup() {
   a = n*n-1;
   c = pow(n*(d+f),2)-pow(d+n*f,2);
   
-  delta_fi = 0.003;
+  delta_fi = 0.002;
   scale = 1;
   
   xOfs = yOfs = 0;
@@ -41,7 +41,7 @@ void setup() {
   rays.add(new Ray());
   rays.add(new Ray());
   
-  alpha = new float[]{0.4,0.3};
+  alpha = new float[]{0.35,0.2};
   
   frameRate(999);//Means unlimited
   
@@ -60,7 +60,7 @@ void draw(){
   text(frameRate,0,10);
   text("alpha0",1,54);
   text("alpha1",1,80);
-  text("R2",15,105);
+  text("R",15,105);
   
   DrawAxises();
   
@@ -129,9 +129,10 @@ void ReCalculate(){
 
 void DrawRay(){
   float coords[];
+  //coords = float(split("0;0",';'));
   coords = float(split(txtR.getText(),';'));
   
-  for(int i=0;i<=1;i++){
+   for(int i=0;i<2;i++){
     
     float b0 = _b(alpha[i]);
     float r0 = (-b0-sqrt(b0*b0-4*a*c))/(2*a);
@@ -141,12 +142,12 @@ void DrawRay(){
     //ellipse(x0*scale+width/2+xOfs,y0*scale+height/2+yOfs,5,5);
   
     float k1 = r0, k2 = sqrt(pow(d+f-x0,2)+y0*y0);
-    float alphaN = atan( (1/k1+y0*n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
+    float alphaN = atan( y0*(1/k1+n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
   
     //Normal drawing
     if(true){
      float yn1 = y0*0.5, yn2 = y0*1.5, xn1 = (yn1-y0)/tan(alphaN)+x0, xn2 = (yn2-y0)/tan(alphaN)+x0;
-     line( xn1*scale+width/2+xOfs , yn1*scale+height/2+yOfs , xn2*scale+width/2+xOfs , yn2*scale+height/2+yOfs ); //<>//
+     line( xn1*scale+width/2+xOfs , yn1*scale+height/2+yOfs , xn2*scale+width/2+xOfs , yn2*scale+height/2+yOfs );
     }
   
      if(i == 0){
@@ -156,17 +157,18 @@ void DrawRay(){
        stroke(0,0,255);
      }
      
-     rays.set(i,new Ray(coords[0],coords[1],atan((coords[1] - y0)/(coords[0] - x0))));
+       
+     rays.set(i,new Ray(coords[0],coords[1],atan( (y0-coords[1])/(x0-coords[0]))));
      line(rays.get(i).x*scale+width/2+xOfs,rays.get(i).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
   
-     gamma = asin(sin(PI-alphaN+rays.get(i).angle)/n);
+     gamma = asin(sin(abs(alphaN)+rays.get(i).angle)/n);
   
-     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , (-200/tan(alpha[i] + gamma))*scale +width/2+xOfs ,-200*scale+height/2+yOfs );
-    }
+     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0+1000)/tan(abs(alphaN) - gamma)+x0)*scale +width/2+xOfs ,-1000*scale+height/2+yOfs );
+  }
 }
 //Scaling
 void mouseWheel(MouseEvent event) {
-  //float e = event.getCount();
+  
   if(event.getCount() == 1)
     scale *= 0.8;
   else
@@ -199,130 +201,130 @@ void DrawAxises(){
    text("Y",width/2+10,height);
 }
 void createGUI(){
-  G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
-  G4P.messagesEnabled(false);
+ G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
+ G4P.messagesEnabled(false);
     
-  textfield1 = new GTextField(this, 105, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield1.setText(str(d));
-  textfield1.addEventHandler(this, "textfield1_change1");
+ textfield1 = new GTextField(this, 105, 1, 50, 20, G4P.SCROLLBARS_NONE);
+ textfield1.setText(str(d));
+ textfield1.addEventHandler(this, "textfield1_change1");
   
-  textfield2 = new GTextField(this, 170, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield2.setText(str(f));
-  textfield2.addEventHandler(this, "textfield2_change1");
+ textfield2 = new GTextField(this, 170, 1, 50, 20, G4P.SCROLLBARS_NONE);
+ textfield2.setText(str(f));
+ textfield2.addEventHandler(this, "textfield2_change1");
   
-  textfield3 = new GTextField(this, 240, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield3.setText(str(n));
-  textfield3.addEventHandler(this, "textfield3_change1");
+ textfield3 = new GTextField(this, 240, 1, 50, 20, G4P.SCROLLBARS_NONE);
+ textfield3.setText(str(n));
+ textfield3.addEventHandler(this, "textfield3_change1");
   
-  textfield4 = new GTextField(this, 340, 1, 50, 20, G4P.SCROLLBARS_NONE);
-  textfield4.setText(str(delta_fi));
-  textfield4.addEventHandler(this, "textfield4_change1");
+ textfield4 = new GTextField(this, 340, 1, 50, 20, G4P.SCROLLBARS_NONE);
+ textfield4.setText(str(delta_fi));
+ textfield4.addEventHandler(this, "textfield4_change1");
   
-  txtAlpha0 = new GTextField(this, 40, 40, 100, 20, G4P.SCROLLBARS_NONE);
-  txtAlpha0.setText(str(alpha[0]));
-  txtAlpha0.addEventHandler(this, "txtAlpha0_change1");
+ txtAlpha0 = new GTextField(this, 40, 40, 100, 20, G4P.SCROLLBARS_NONE);
+ txtAlpha0.setText(str(alpha[0]));
+ txtAlpha0.addEventHandler(this, "txtAlpha0_change1");
   
-  txtAlpha1 = new GTextField(this, 40, 65, 50, 20, G4P.SCROLLBARS_NONE);
-  txtAlpha1.setText(str(alpha[1]));
-  txtAlpha1.addEventHandler(this, "txtAlpha1_change1");
+ txtAlpha1 = new GTextField(this, 40, 65, 50, 20, G4P.SCROLLBARS_NONE);
+ txtAlpha1.setText(str(alpha[1]));
+ txtAlpha1.addEventHandler(this, "txtAlpha1_change1");
   
-  txtR = new GTextField(this, 40, 90, 50, 20, G4P.SCROLLBARS_NONE);
-  txtR.setText("0;30");
-  txtR.addEventHandler(this, "txtR_change1");
+ txtR = new GTextField(this, 40, 90, 50, 20, G4P.SCROLLBARS_NONE);
+ txtR.setText("0;30");
+ txtR.addEventHandler(this, "txtR_change1");
   
-  checkbox1 = new GCheckbox(this, 400, 0, 64, 20);
-  checkbox1.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
-  checkbox1.setText("+ (blue)");
-  checkbox1.setSelected(true);
-  checkbox1.addEventHandler(this, "checkbox1_select");
+ checkbox1 = new GCheckbox(this, 400, 0, 64, 20);
+ checkbox1.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
+ checkbox1.setText("+ (blue)");
+ checkbox1.setSelected(true);
+ checkbox1.addEventHandler(this, "checkbox1_select");
   
-  checkbox2 = new GCheckbox(this, 470, 0, 60, 20);
-  checkbox2.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
-  checkbox2.setText("- (red)");
-  checkbox2.setSelected(true);
-  checkbox2.addEventHandler(this, "checkbox2_select");
+ checkbox2 = new GCheckbox(this, 470, 0, 60, 20);
+ checkbox2.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
+ checkbox2.setText("- (red)");
+ checkbox2.setSelected(true);
+ checkbox2.addEventHandler(this, "checkbox2_select");
   
-  checkbox3 = new GCheckbox(this, 530, 0, 100, 20);
-  checkbox3.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
-  checkbox3.setText("Enable moving");
-  checkbox3.setSelected(true);
-  checkbox3.addEventHandler(this, "checkbox3_select");
+ checkbox3 = new GCheckbox(this, 530, 0, 100, 20);
+ checkbox3.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
+ checkbox3.setText("Enable moving");
+ checkbox3.setSelected(true);
+ checkbox3.addEventHandler(this, "checkbox3_select");
 }
 
 void textfield1_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(float(source.getText())>0){
-      d = float(source.getText());
-      ReCalculate();
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     d = float(source.getText());
+     ReCalculate();
+   }
+ }
 }
 
 void textfield2_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(float(source.getText())>0){
-      f = float(source.getText());
-      ReCalculate();
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     f = float(source.getText());
+     ReCalculate();
+   }
+ }
 }
 void textfield3_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(int(source.getText())>0){
-      n = float(source.getText());
-      ReCalculate();
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(int(source.getText())>0){
+     n = float(source.getText());
+     ReCalculate();
+   }
+ }
 }
 void textfield4_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(float(source.getText())>0){
-      delta_fi = float(source.getText());
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     delta_fi = float(source.getText());
+   }
+ }
 }
 void txtAlpha0_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(float(source.getText())>0){
-      alpha[0] = float(source.getText());
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     alpha[0] = float(source.getText());
+   }
+ }
 }
 void txtAlpha1_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(float(source.getText())>0){
-      alpha[1] = float(source.getText());
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     alpha[1] = float(source.getText());
+   }
+ }
 }
 void txtR_change1(GTextField source, GEvent event) {
-  if(event == GEvent.CHANGED){
-    if(source.getText().contains(";")){
-      DrawRay();
-    }
-  }
+ if(event == GEvent.CHANGED){
+   if(source.getText().contains(";")){
+     DrawRay();
+   }
+ }
 }
 void checkbox1_select(GCheckbox source, GEvent event) {
-  if (checkbox1.isSelected() == true) {
-    plusEnable = true;
-  }
-  else {
-    plusEnable = false;
-  }
+ if (checkbox1.isSelected() == true) {
+   plusEnable = true;
+ }
+ else {
+   plusEnable = false;
+ }
 } 
 void checkbox2_select(GCheckbox source, GEvent event) { 
-  if (checkbox2.isSelected() == true) {
-    minusEnable = true;
-  }
-  else {
-    minusEnable = false;
-  }
+ if (checkbox2.isSelected() == true) {
+   minusEnable = true;
+ }
+ else {
+   minusEnable = false;
+ }
 } 
 void checkbox3_select(GCheckbox source, GEvent event) { 
-  if (checkbox3.isSelected() == true) {
-    moveEnable = true;
-  }
-  else {
-    moveEnable = false;
-  }
+ if (checkbox3.isSelected() == true) {
+   moveEnable = true;
+ }
+ else {
+   moveEnable = false;
+ }
 } 
