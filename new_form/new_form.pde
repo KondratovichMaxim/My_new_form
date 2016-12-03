@@ -18,6 +18,7 @@ GTextField txtR;
 GCheckbox checkbox1; 
 GCheckbox checkbox2;
 GCheckbox checkbox3; 
+GCheckbox DrawRays; 
 
 void setup() {
   size(1200, 600);
@@ -36,6 +37,7 @@ void setup() {
   
   plusEnable = minusEnable = true;
   moveEnable = true;
+  rayDrawing = true;
   
   rays = new ArrayList();
   rays.add(new Ray());
@@ -70,12 +72,12 @@ void draw(){
   text("d",d*scale + width/2 + xOfs,15 + height/2 + yOfs);
   
   ellipse( (d+f)*scale + width/2 + xOfs, 0.5 + height/2 + yOfs, 3, 3);
-  text("f(F)",(d+f)*scale + width/2 + xOfs,15 + height/2 + yOfs);
+  text("f",(d+f)*scale + width/2 + xOfs,15 + height/2 + yOfs);
   fill(0);
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
-  for( fi = 3*PI/2; fi < 5*PI/2; fi += delta_fi ){
+  for( fi = -PI/2; fi < PI/2; fi += delta_fi ){
      float[] rs = r();
      
      //Scaling
@@ -95,7 +97,8 @@ void draw(){
      stroke(0);
   }
   
-  DrawRay();
+  if(rayDrawing)
+    DrawRay();
 }
 
 float[] r(){
@@ -106,13 +109,13 @@ float[] r(){
   if(plusEnable){
     rs[0] = (-b+sqrt(b*b-4*a*c))/(2*a);
     if(rs[0]<=0 || rs[0]>=d+n*f)
-      rs[0] = 0;
+     rs[0] = 0;
   }
   
   if(minusEnable){
     rs[1] = (-b-sqrt(b*b-4*a*c))/(2*a);
     if(rs[1]<=0 || rs[1]>=d+n*f)
-      rs[1] = 0;
+     rs[1] = 0;
   }
   
   return rs;
@@ -190,15 +193,19 @@ void mouseReleased() {
   x0o = mouseX;
   y0o = mouseY;
 }
+void keyPressed(){
+ if(keyCode == ENTER)
+ saveFrame("Frame_##.png");
+}
 void DrawAxises(){
    stroke(0);
    strokeWeight(1);
    
-   line(0,height/2,width,height/2);
-   text("X",width-10,height/2+20);
+   line(0,height/2+yOfs,width,height/2+yOfs);
+   text("X",width-10,height/2+20+yOfs);
    
-   line(width/2,0,width/2,height);
-   text("Y",width/2+10,height);
+   line(width/2+xOfs,0,width/2+xOfs,height);
+   text("Y",width/2+10+xOfs,height);
 }
 void createGUI(){
  G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
@@ -229,7 +236,7 @@ void createGUI(){
  txtAlpha1.addEventHandler(this, "txtAlpha1_change1");
   
  txtR = new GTextField(this, 40, 90, 50, 20, G4P.SCROLLBARS_NONE);
- txtR.setText("0;30");
+ txtR.setText("0;0");
  txtR.addEventHandler(this, "txtR_change1");
   
  checkbox1 = new GCheckbox(this, 400, 0, 64, 20);
@@ -249,6 +256,12 @@ void createGUI(){
  checkbox3.setText("Enable moving");
  checkbox3.setSelected(true);
  checkbox3.addEventHandler(this, "checkbox3_select");
+ 
+ DrawRays = new GCheckbox(this, 630, 0, 100, 20);
+ DrawRays.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
+ DrawRays.setText("Refract rays");
+ DrawRays.setSelected(true);
+ DrawRays.addEventHandler(this, "DrawRays_select");
 }
 
 void textfield1_change1(GTextField source, GEvent event) {
@@ -326,5 +339,13 @@ void checkbox3_select(GCheckbox source, GEvent event) {
  }
  else {
    moveEnable = false;
+ }
+} 
+void DrawRays_select(GCheckbox source, GEvent event) { 
+ if (DrawRays.isSelected() == true) {
+   rayDrawing = true;
+ }
+ else {
+   rayDrawing = false;
  }
 } 
