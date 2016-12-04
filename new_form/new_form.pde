@@ -43,7 +43,7 @@ void setup() {
   rays.add(new Ray());
   rays.add(new Ray());
   
-  alpha = new float[]{0.35,0.2};
+  alpha = new float[]{2*PI-0.2,0.2};
   
   frameRate(999);//Means unlimited
   
@@ -146,7 +146,7 @@ void DrawRay(){
   
     float k1 = r0, k2 = sqrt(pow(d+f-x0,2)+y0*y0);
     float alphaN = atan( y0*(1/k1+n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
-  
+    
     //Normal drawing
     if(true){
      float yn1 = y0*0.5, yn2 = y0*1.5, xn1 = (yn1-y0)/tan(alphaN)+x0, xn2 = (yn2-y0)/tan(alphaN)+x0;
@@ -160,13 +160,23 @@ void DrawRay(){
        stroke(0,0,255);
      }
      
+    
+    if(alpha[i] > PI){
+    
+     rays.set(i,new Ray(coords[0],coords[1],atan( (coords[1]-y0)/(coords[0]-x0))));
+     line(rays.get(i).x*scale+width/2+xOfs,rays.get(i).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
+     gamma = asin(sin(2*PI+abs(alphaN)-rays.get(i).angle)/n);
+     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0-1000)/tan(PI-abs(alphaN) + gamma)+x0)*scale +width/2+xOfs ,1000*scale+height/2+yOfs );
+    }
+    else{
        
      rays.set(i,new Ray(coords[0],coords[1],atan( (y0-coords[1])/(x0-coords[0]))));
      line(rays.get(i).x*scale+width/2+xOfs,rays.get(i).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
-  
      gamma = asin(sin(abs(alphaN)+rays.get(i).angle)/n);
+     
   
-     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0+1000)/tan(abs(alphaN) - gamma)+x0)*scale +width/2+xOfs ,-1000*scale+height/2+yOfs );
+     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0+1000)/tan(abs(alphaN) - gamma)+x0)*scale +width/2+xOfs ,-1000*scale+height/2+yOfs ); //<>//
+    }
   }
 }
 //Scaling
