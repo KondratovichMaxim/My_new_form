@@ -42,8 +42,14 @@ void setup() {
   rays = new ArrayList();
   rays.add(new Ray());
   rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
   
-  alpha = new float[]{2*PI-0.2,0.2};
+  alpha = new float[]{0.1,0.2,0.3,0.4,2*PI-0.1,2*PI-0.2,2*PI-0.3,2*PI-0.4};
   
   frameRate(999);//Means unlimited
   
@@ -77,7 +83,9 @@ void draw(){
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
-  for( fi = -PI/2; fi < PI/2; fi += delta_fi ){
+  float fiMax = acos((d+n*f+sqrt((n*n-1)*(pow(n*(d+f),2)-pow(d+n*f,2))))/(n*n*(d+f)));
+  
+  for( fi = -fiMax; fi < fiMax; fi += delta_fi ){
      float[] rs = r();
      
      //Scaling
@@ -99,6 +107,8 @@ void draw(){
   
   if(rayDrawing)
     DrawRay();
+  
+  //DrawR();
 }
 
 float[] r(){
@@ -109,13 +119,13 @@ float[] r(){
   if(plusEnable){
     rs[0] = (-b+sqrt(b*b-4*a*c))/(2*a);
     if(rs[0]<=0 || rs[0]>=d+n*f)
-     rs[0] = 0;
+    rs[0] = 0;
   }
   
   if(minusEnable){
     rs[1] = (-b-sqrt(b*b-4*a*c))/(2*a);
     if(rs[1]<=0 || rs[1]>=d+n*f)
-     rs[1] = 0;
+    rs[1] = 0;
   }
   
   return rs;
@@ -135,7 +145,7 @@ void DrawRay(){
   //coords = float(split("0;0",';'));
   coords = float(split(txtR.getText(),';'));
   
-   for(int i=0;i<2;i++){
+   for(int i=0;i<8;i++){
     
     float b0 = _b(alpha[i]);
     float r0 = (-b0-sqrt(b0*b0-4*a*c))/(2*a);
@@ -154,13 +164,14 @@ void DrawRay(){
     }
   
      if(i == 0){
-       stroke(0,255,0);
+      stroke(0,255,0);
      }
      else{
-       stroke(0,0,255);
+      stroke(0,0,255);
      }
      
-    
+     stroke(0);
+     
     if(alpha[i] > PI){
     
      rays.set(i,new Ray(coords[0],coords[1],atan( (coords[1]-y0)/(coords[0]-x0))));
@@ -175,9 +186,21 @@ void DrawRay(){
      gamma = asin(sin(abs(alphaN)+rays.get(i).angle)/n);
      
   
-     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0+1000)/tan(abs(alphaN) - gamma)+x0)*scale +width/2+xOfs ,-1000*scale+height/2+yOfs ); //<>//
+     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0+1000)/tan(abs(alphaN) - gamma)+x0)*scale +width/2+xOfs ,-1000*scale+height/2+yOfs );
     }
   }
+}
+void DrawR(){
+  fi = acos((d+n*f+sqrt((n*n-1)*(pow(n*(d+f),2)-pow(d+n*f,2))))/(n*n*(d+f)))-0.0000001;
+  b=_b(fi);
+  
+  float rr = (-b-sqrt(b*b-4*a*c))/(2*a)*scale;
+  stroke(0);
+  noFill();
+  arc(width/2 + xOfs,height/2 + yOfs,2*rr,2*rr,-fi,fi);
+     
+  line(width/2 + xOfs,height/2 + yOfs,rr*cos(fi)+width/2 + xOfs,rr*sin(fi)+height/2 + yOfs);
+  line(width/2 + xOfs,height/2 + yOfs,rr*cos(fi)+width/2 + xOfs,-rr*sin(fi)+height/2 + yOfs); //<>//
 }
 //Scaling
 void mouseWheel(MouseEvent event) {
