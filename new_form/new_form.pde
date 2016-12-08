@@ -191,10 +191,10 @@ void DrawRay(){
   }
 }
 void DrawR(){
-  fi = acos((d+n*f+sqrt((n*n-1)*(pow(n*(d+f),2)-pow(d+n*f,2))))/(n*n*(d+f)))-0.0000001;
+  fi = acos((d+n*f+sqrt((n*n-1)*(pow(n*(d+f),2)-pow(d+n*f,2))))/(n*n*(d+f)));
   b=_b(fi);
   
-  float rr = (-b-sqrt(b*b-4*a*c))/(2*a)*scale;
+  float rr = -b/(2*a)*scale;
   stroke(0);
   noFill();
   arc(width/2 + xOfs,height/2 + yOfs,2*rr,2*rr,-fi,fi);
