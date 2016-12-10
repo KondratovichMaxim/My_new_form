@@ -5,6 +5,7 @@ float a,b,c,fi;
 float delta_fi,scale;
 float x0o,y0o,xOfs,yOfs;
 boolean plusEnable,minusEnable,moveEnable,rayDrawing;
+int dots;
 ArrayList<Ray> rays;
 float alpha[];
 
@@ -39,17 +40,13 @@ void setup() {
   moveEnable = true;
   rayDrawing = true;
   
+  dots = 0;
+  
   rays = new ArrayList();
   rays.add(new Ray());
   rays.add(new Ray());
-  rays.add(new Ray());
-  rays.add(new Ray());
-  rays.add(new Ray());
-  rays.add(new Ray());
-  rays.add(new Ray());
-  rays.add(new Ray());
   
-  alpha = new float[]{0.1,0.2,0.3,0.4,2*PI-0.1,2*PI-0.2,2*PI-0.3,2*PI-0.4};
+  alpha = new float[]{0.1,0.2};
   
   frameRate(999);//Means unlimited
   
@@ -83,12 +80,38 @@ void draw(){
   stroke(0);
   ellipse(width/2 + xOfs, height/2 + yOfs,3,3);
   
+  text("dots: "+dots,0,height-1);
+  dots = 0;
+  
   float fiMax = acos((d+n*f+sqrt((n*n-1)*(pow(n*(d+f),2)-pow(d+n*f,2))))/(n*n*(d+f)));
   
   for( fi = -fiMax; fi < fiMax; fi += delta_fi ){
      float[] rs = r();
      
      //Scaling
+     
+     
+     if(true){
+       float coords[];
+       coords = float(split(txtR.getText(),';'));
+       for(int i=0;i<2;i++){
+        float x0 = rs[i]*cos(fi), y0 = rs[i]*sin(fi);
+        
+        float gamma;
+  
+        float k1 = rs[i], k2 = sqrt(pow(d+f-x0,2)+y0*y0);
+        float alphaN = atan( y0*(1/k1+n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
+        
+        gamma = asin(sin(abs(alphaN)+atan( (coords[1]-y0)/(coords[0]-x0)))/n);
+        
+        if(gamma > abs(alphaN)){
+          noStroke();
+          fill(0);
+          ellipse(x0*scale+ width/2 + xOfs,y0*scale+ height/2 + yOfs,3,3);
+        }
+       }
+     }
+     
      rs[0] = rs[0]*scale;
      rs[1] = rs[1]*scale;
      
@@ -107,6 +130,7 @@ void draw(){
   
   if(rayDrawing)
     DrawRay();
+    
   
   //DrawR();
 }
@@ -119,13 +143,17 @@ float[] r(){
   if(plusEnable){
     rs[0] = (-b+sqrt(b*b-4*a*c))/(2*a);
     if(rs[0]<=0 || rs[0]>=d+n*f)
-    rs[0] = 0;
+      rs[0] = 0;
+    else
+      dots++;
   }
   
   if(minusEnable){
     rs[1] = (-b-sqrt(b*b-4*a*c))/(2*a);
     if(rs[1]<=0 || rs[1]>=d+n*f)
-    rs[1] = 0;
+      rs[1] = 0;
+    else
+      dots++;
   }
   
   return rs;
@@ -142,10 +170,10 @@ void ReCalculate(){
 
 void DrawRay(){
   float coords[];
-  //coords = float(split("0;0",';'));
+  //coords = float(split("40;0",';'));
   coords = float(split(txtR.getText(),';'));
   
-   for(int i=0;i<8;i++){
+   for(int i=0;i<2;i++){
     
     float b0 = _b(alpha[i]);
     float r0 = (-b0-sqrt(b0*b0-4*a*c))/(2*a);
@@ -177,7 +205,9 @@ void DrawRay(){
      rays.set(i,new Ray(coords[0],coords[1],atan( (coords[1]-y0)/(coords[0]-x0))));
      line(rays.get(i).x*scale+width/2+xOfs,rays.get(i).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
      gamma = asin(sin(2*PI+abs(alphaN)-rays.get(i).angle)/n);
-     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0-1000)/tan(PI-abs(alphaN) + gamma)+x0)*scale +width/2+xOfs ,1000*scale+height/2+yOfs );
+     float alphaR = abs(alphaN)-gamma;
+     
+     line(x0*scale+width/2+xOfs , y0*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-x0)*tan(alphaR)+y0)*scale+height/2+yOfs); //<>//
     }
     else{
        
@@ -185,8 +215,9 @@ void DrawRay(){
      line(rays.get(i).x*scale+width/2+xOfs,rays.get(i).y*scale+height/2+yOfs,x0*scale+width/2+xOfs,y0*scale+height/2+yOfs);
      gamma = asin(sin(abs(alphaN)+rays.get(i).angle)/n);
      
-  
-     line( x0*scale+width/2+xOfs , y0*scale+height/2+yOfs , ((y0+1000)/tan(abs(alphaN) - gamma)+x0)*scale +width/2+xOfs ,-1000*scale+height/2+yOfs );
+     float alphaR = abs(alphaN)-gamma;
+     
+     line(x0*scale+width/2+xOfs , y0*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-x0)*tan(PI-alphaR)+y0)*scale+height/2+yOfs); //<>//
     }
   }
 }
