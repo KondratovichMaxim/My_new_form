@@ -1,7 +1,7 @@
 import g4p_controls.*; //<>//
 
 float x,y,f,d,n;
-float a,b,c,fi;
+float a,b,c,fi,rad;
 float delta_fi,scale;
 float x0o,y0o,xOfs,yOfs;
 boolean plusEnable,minusEnable,moveEnable,rayDrawing;
@@ -50,10 +50,8 @@ void setup() {
   rays.add(new Ray());
   rays.add(new Ray());
   rays.add(new Ray());
-  rays.add(new Ray());
-  rays.add(new Ray());
   
-  alpha = new float[]{0.1,0.2,0.35,2*PI-0.1,2*PI-0.2,2*PI-0.35};
+  alpha = new float[]{0.1,0.2,2*PI-0.1,2*PI-0.2};
   
   frameRate(999);//Means unlimited
   
@@ -94,6 +92,19 @@ void draw(){
   dots = 0;
   
   float fiMax = acos((d+n*f+sqrt((n*n-1)*(pow(n*(d+f),2)-pow(d+n*f,2))))/(n*n*(d+f)));
+  
+  
+    fi = fiMax;
+    float rr = -_b(fiMax)/(2*a);
+    float rx = rr*cos(fi);
+    float ry = rr*sin(fi);
+    float ang = atan(ry/(d+f-rx));
+    float fr = sqrt(pow(d+f-rx,2)+pow(ry,2));
+    rad = fr;
+    stroke(255,0,0);
+    noFill();
+    arc((d+f)*scale+ width/2 + xOfs, height/2 + yOfs,2*fr*scale,2*fr*scale,PI-ang,PI+ang);
+    stroke(0);
   
   for( fi = -fiMax; fi < fiMax; fi += delta_fi ){
      float[] rs = r();
@@ -157,7 +168,7 @@ void ReCalculate(){
 void DrawRay(){
   float coords[];
   
-   for(int i=0;i<6;i++){
+   for(int i=0;i<4;i++){
      
     if(i<2)
       coords = float(split(txtR1.getText(),';'));
@@ -195,7 +206,25 @@ void DrawRay(){
      gamma = asin(sin(2*PI+abs(alphaN)-rays.get(i).angle)/n);
      float alphaR = abs(alphaN)-gamma;
      
-     line(x0*scale+width/2+xOfs , y0*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-x0)*tan(alphaR)+y0)*scale+height/2+yOfs); //<>//
+     float xo,yo;
+     float ao=tan(alphaR)*tan(alphaR)+1, bo=2*tan(alphaR)*y0-2*x0*tan(alphaR)*tan(alphaR)-2*(d+f), co=pow(x0*tan(alphaR),2)+y0*y0-2*tan(alphaR)*x0*y0+pow(d+f,2)-rad*rad;
+     xo = (-bo-sqrt(bo*bo-4*ao*co))/(2*ao);
+     yo = tan(alphaR)*(xo-x0)+y0;
+     
+     line(x0*scale+width/2+xOfs , y0*scale+height/2+yOfs ,xo*scale+width/2+xOfs , yo*scale+height/2+yOfs);
+     
+     float alphaNo = 2*PI - atan(yo/(d+f-xo));
+     //Normal drawing
+     if(true){
+       float yn1 = yo*0.85, yn2 = yo*1.15, xn1 = (yn1-yo)/tan(alphaNo)+xo, xn2 = (yn2-yo)/tan(alphaNo)+xo;
+       line( xn1*scale+width/2+xOfs , yn1*scale+height/2+yOfs , xn2*scale+width/2+xOfs , yn2*scale+height/2+yOfs );
+      }
+      
+      float gammao = asin(n*sin(alphaNo-alphaR)); 
+      
+      float alphaRo = -( alphaNo-gammao);
+      line(xo*scale+width/2+xOfs , yo*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-xo)*tan(PI-alphaRo)+yo)*scale+height/2+yOfs);
+     
     }
     else{
        
@@ -205,7 +234,24 @@ void DrawRay(){
      
      float alphaR = abs(alphaN)-gamma;
      
-     line(x0*scale+width/2+xOfs , y0*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-x0)*tan(PI-alphaR)+y0)*scale+height/2+yOfs); //<>//
+     alphaR*=-1;
+     float xo,yo;
+     float ao=tan(alphaR)*tan(alphaR)+1, bo=2*tan(alphaR)*y0-2*x0*tan(alphaR)*tan(alphaR)-2*(d+f), co=pow(x0*tan(alphaR),2)+y0*y0-2*tan(alphaR)*x0*y0+pow(d+f,2)-rad*rad;
+     xo = (-bo-sqrt(bo*bo-4*ao*co))/(2*ao);
+     yo = tan(alphaR)*(xo-x0)+y0;
+     line(x0*scale+width/2+xOfs , y0*scale+height/2+yOfs ,xo*scale+width/2+xOfs , yo*scale+height/2+yOfs);
+     
+     float alphaNo = 2*PI - atan(yo/(d+f-xo));
+     //Normal drawing
+     if(true){
+       float yn1 = yo*0.85, yn2 = yo*1.15, xn1 = (yn1-yo)/tan(alphaNo)+xo, xn2 = (yn2-yo)/tan(alphaNo)+xo;
+       line( xn1*scale+width/2+xOfs , yn1*scale+height/2+yOfs , xn2*scale+width/2+xOfs , yn2*scale+height/2+yOfs );
+      }
+      
+      float gammao = asin(n*sin(alphaNo-alphaR)); 
+      
+      float alphaRo = -( alphaNo-gammao);
+      line(xo*scale+width/2+xOfs , yo*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-xo)*tan(PI-alphaRo)+yo)*scale+height/2+yOfs); //<>//
     }
   }
 }
@@ -275,7 +321,7 @@ void createGUI(){
  textfield4.setText(str(delta_fi));
  textfield4.addEventHandler(this, "textfield4_change1");
   
- txtAlpha0 = new GTextField(this, 40, 40, 100, 20, G4P.SCROLLBARS_NONE);
+ txtAlpha0 = new GTextField(this, 40, 40, 50, 20, G4P.SCROLLBARS_NONE);
  txtAlpha0.setText(str(alpha[0]));
  txtAlpha0.addEventHandler(this, "txtAlpha0_change1");
   
