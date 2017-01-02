@@ -15,7 +15,10 @@ GTextField textfield3;
 GTextField textfield4;
 GTextField txtAlpha0;
 GTextField txtAlpha1;
-GTextField txtR;
+GTextField txtAlpha2;
+GTextField txtAlpha3;
+GTextField txtR1;
+GTextField txtR2;
 GCheckbox checkbox1; 
 GCheckbox checkbox2;
 GCheckbox checkbox3; 
@@ -45,8 +48,12 @@ void setup() {
   rays = new ArrayList();
   rays.add(new Ray());
   rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
+  rays.add(new Ray());
   
-  alpha = new float[]{0.1,0.2};
+  alpha = new float[]{0.1,0.2,0.35,2*PI-0.1,2*PI-0.2,2*PI-0.35};
   
   frameRate(999);//Means unlimited
   
@@ -65,7 +72,10 @@ void draw(){
   text(frameRate,0,10);
   text("alpha0",1,54);
   text("alpha1",1,80);
-  text("R",15,105);
+  text("alpha2",1,106);
+  text("alpha3",1,132);
+  text("R1",25,155);
+  text("R2",25,181);
   
   DrawAxises();
   
@@ -87,30 +97,6 @@ void draw(){
   
   for( fi = -fiMax; fi < fiMax; fi += delta_fi ){
      float[] rs = r();
-     
-     //Scaling
-     
-     
-     if(true){
-       float coords[];
-       coords = float(split(txtR.getText(),';'));
-       for(int i=0;i<2;i++){
-        float x0 = rs[i]*cos(fi), y0 = rs[i]*sin(fi);
-        
-        float gamma;
-  
-        float k1 = rs[i], k2 = sqrt(pow(d+f-x0,2)+y0*y0);
-        float alphaN = atan( y0*(1/k1+n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
-        
-        gamma = asin(sin(abs(alphaN)+atan( (coords[1]-y0)/(coords[0]-x0)))/n);
-        
-        if(gamma > abs(alphaN)){
-          noStroke();
-          fill(0);
-          ellipse(x0*scale+ width/2 + xOfs,y0*scale+ height/2 + yOfs,3,3);
-        }
-       }
-     }
      
      rs[0] = rs[0]*scale;
      rs[1] = rs[1]*scale;
@@ -170,17 +156,19 @@ void ReCalculate(){
 
 void DrawRay(){
   float coords[];
-  //coords = float(split("40;0",';'));
-  coords = float(split(txtR.getText(),';'));
   
-   for(int i=0;i<2;i++){
+   for(int i=0;i<6;i++){
+     
+    if(i<2)
+      coords = float(split(txtR1.getText(),';'));
+      else
+       coords = float(split(txtR2.getText(),';'));
     
     float b0 = _b(alpha[i]);
     float r0 = (-b0-sqrt(b0*b0-4*a*c))/(2*a);
     float x0 = r0*cos(alpha[i]), y0 = r0*sin(alpha[i]);
     float gamma;
     stroke(0);
-    //ellipse(x0*scale+width/2+xOfs,y0*scale+height/2+yOfs,5,5);
   
     float k1 = r0, k2 = sqrt(pow(d+f-x0,2)+y0*y0);
     float alphaN = atan( y0*(1/k1+n/k2)/(x0*(1/k1+n/k2)-(d+f)*n/k2) );
@@ -257,10 +245,6 @@ void mouseReleased() {
   x0o = mouseX;
   y0o = mouseY;
 }
-void keyPressed(){
- if(keyCode == ENTER)
- saveFrame("Frame_##.png");
-}
 void DrawAxises(){
    stroke(0);
    strokeWeight(1);
@@ -298,10 +282,22 @@ void createGUI(){
  txtAlpha1 = new GTextField(this, 40, 65, 50, 20, G4P.SCROLLBARS_NONE);
  txtAlpha1.setText(str(alpha[1]));
  txtAlpha1.addEventHandler(this, "txtAlpha1_change1");
+ 
+ txtAlpha2 = new GTextField(this, 40, 90, 50, 20, G4P.SCROLLBARS_NONE);
+ txtAlpha2.setText(str(alpha[2]));
+ txtAlpha2.addEventHandler(this, "txtAlpha2_change1");
+ 
+ txtAlpha3 = new GTextField(this, 40, 115, 50, 20, G4P.SCROLLBARS_NONE);
+ txtAlpha3.setText(str(alpha[3]));
+ txtAlpha3.addEventHandler(this, "txtAlpha3_change1");
   
- txtR = new GTextField(this, 40, 90, 50, 20, G4P.SCROLLBARS_NONE);
- txtR.setText("0;0");
- txtR.addEventHandler(this, "txtR_change1");
+ txtR1 = new GTextField(this, 40, 140, 50, 20, G4P.SCROLLBARS_NONE);
+ txtR1.setText("0;0");
+ txtR1.addEventHandler(this, "txtR1_change1");
+ 
+ txtR2 = new GTextField(this, 40, 165, 50, 20, G4P.SCROLLBARS_NONE);
+ txtR2.setText("0;0");
+ txtR2.addEventHandler(this, "txtR2_change1");
   
  checkbox1 = new GCheckbox(this, 400, 0, 64, 20);
  checkbox1.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
@@ -374,7 +370,28 @@ void txtAlpha1_change1(GTextField source, GEvent event) {
    }
  }
 }
-void txtR_change1(GTextField source, GEvent event) {
+void txtAlpha2_change1(GTextField source, GEvent event) {
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     alpha[2] = float(source.getText());
+   }
+ }
+}
+void txtAlpha3_change1(GTextField source, GEvent event) {
+ if(event == GEvent.CHANGED){
+   if(float(source.getText())>0){
+     alpha[3] = float(source.getText());
+   }
+ }
+}
+void txtR1_change1(GTextField source, GEvent event) {
+ if(event == GEvent.CHANGED){
+   if(source.getText().contains(";")){
+     DrawRay();
+   }
+ }
+}
+void txtR2_change1(GTextField source, GEvent event) {
  if(event == GEvent.CHANGED){
    if(source.getText().contains(";")){
      DrawRay();
