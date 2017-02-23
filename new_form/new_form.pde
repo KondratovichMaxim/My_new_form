@@ -1,4 +1,6 @@
-import g4p_controls.*; //<>//
+//Made by Maxim Kondratovich minsk-maxim@mail.ru
+//2016-2017
+import g4p_controls.*;
 
 float x,y,f,d,n;
 float a,b,c,fi,rad;
@@ -8,6 +10,7 @@ boolean plusEnable,minusEnable,moveEnable,rayDrawing;
 int dots;
 ArrayList<Ray> rays;
 float alpha[];
+float rAlph;
 
 GTextField textfield1;
 GTextField textfield2;
@@ -27,7 +30,7 @@ GCheckbox DrawRays;
 void setup() {
   size(1200, 600);
   
-  d=80;
+  d=180;
   f=220;
   n=1.5;
   
@@ -52,6 +55,8 @@ void setup() {
   rays.add(new Ray());
   
   alpha = new float[]{0.1,0.2,2*PI-0.1,2*PI-0.2};
+  
+  rAlph = 0;
   
   frameRate(999);//Means unlimited
   
@@ -128,10 +133,31 @@ void draw(){
   if(rayDrawing)
     DrawRay();
     
+    DrawP();
+    
+    //float rR=100*sqrt(abs(cos(2*rAlph)))*cos(2*rAlph)/abs(cos(2*rAlph));
+    //float xx=rR*cos(rAlph),yy=rR*sin(rAlph);
+    
+    
+    
+    //txtR1.setText(xx+";"+yy);
+    //txtR2.setText(xx+";"+yy);
+    //rAlph += 0.07;
+    
+    
+    //saveFrame("frames3/###.png");
   
   //DrawR();
 }
-
+void DrawP(){
+ float x_, y_ ;
+ for(x_=0;x_<width;x_+=1){
+  y_ = sqrt((pow(d+f-x_,2)-pow(x_*n*(d+f-1),2))/(pow(n*(d+f-1),2)-1)); 
+  fill(0);
+  stroke(0);
+  ellipse(x_*scale+ width/2 + xOfs,y_*scale+ height/2 + yOfs,3,3); //<>//
+ }
+}
 float[] r(){
   float[] rs = new float[2];
   
@@ -251,7 +277,7 @@ void DrawRay(){
       float gammao = asin(n*sin(alphaNo-alphaR)); 
       
       float alphaRo = -( alphaNo-gammao);
-      line(xo*scale+width/2+xOfs , yo*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-xo)*tan(PI-alphaRo)+yo)*scale+height/2+yOfs); //<>//
+      line(xo*scale+width/2+xOfs , yo*scale+height/2+yOfs ,1500*scale+width/2+xOfs,((1500-xo)*tan(PI-alphaRo)+yo)*scale+height/2+yOfs);
     }
   }
 }
